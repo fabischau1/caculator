@@ -1,137 +1,229 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Futuristischer Taschenrechner</title>
     <style>
         body {
-            margin: 0;
+            background: linear-gradient(135deg, #2c3e50, #000);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(135deg, #020024 0%, #090979 35%, #00d4ff 100%);
-            font-family: 'Roboto', sans-serif;
+            margin: 0;
         }
 
         .calculator {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            box-shadow: 0px 0px 20px rgba(0, 255, 255, 0.8);
+            padding: 30px;
+            width: 350px;
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            max-width: 400px;
-            width: 100%;
+            transition: all 0.3s ease;
         }
 
-        .display {
-            background-color: rgba(255, 255, 255, 0.2);
+        .calculator:hover {
+            box-shadow: 0px 0px 30px rgba(0, 255, 255, 1);
+            transform: translateY(-10px);
+        }
+
+        .screen {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
             padding: 20px;
+            font-size: 2.5rem;
             text-align: right;
-            border-radius: 10px;
-            font-size: 2rem;
-            color: white;
-            margin-bottom: 20px;
+            box-shadow: inset 0px 0px 20px rgba(0, 255, 255, 0.4);
+            color: #00ffff;
+            min-height: 60px;
+            margin-bottom: 15px;
         }
 
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
         }
 
-        .btn {
-            padding: 20px;
-            font-size: 1.5rem;
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
+        .button {
+            background: rgba(0, 0, 0, 0.8);
             border: none;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            color: #00ffff;
+            font-size: 1.5rem;
+            padding: 20px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
+            flex: 1;
+            margin: 0 5px;
+            box-shadow: 0px 4px 15px rgba(0, 255, 255, 0.3);
         }
 
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 20px rgba(0, 255, 255, 0.5);
+            background-color: rgba(0, 255, 255, 0.2);
         }
 
-        .operator {
-            background: #ff6f61;
+        .button:active {
+            transform: translateY(0);
+            box-shadow: none;
+            background-color: rgba(0, 255, 255, 0.3);
         }
 
-        .operator:hover {
-            background: #ff8574;
+        .button.double {
+            flex: 2;
         }
 
-        .equal {
-            background: #0bceaf;
-            grid-column: span 2;
+        .button-row:nth-child(4) .button:last-child {
+            background: rgba(255, 69, 0, 0.8);
+            color: #fff;
         }
 
-        .equal:hover {
-            background: #30e1c8;
+        .button-row:nth-child(4) .button:last-child:hover {
+            background: rgba(255, 69, 0, 1);
         }
 
-        .zero {
-            grid-column: span 2;
+        .button.memory {
+            background: rgba(0, 191, 255, 0.8);
+        }
+
+        .button.memory:hover {
+            background: rgba(0, 191, 255, 1);
         }
     </style>
 </head>
+
 <body>
     <div class="calculator">
-        <div class="display" id="display">0</div>
-        <div class="buttons">
-            <button class="btn" onclick="clearDisplay()">C</button>
-            <button class="btn" onclick="appendToDisplay('%')">%</button>
-            <button class="btn" onclick="deleteLast()">DEL</button>
-            <button class="btn operator" onclick="appendToDisplay('/')">/</button>
-            <button class="btn" onclick="appendToDisplay('7')">7</button>
-            <button class="btn" onclick="appendToDisplay('8')">8</button>
-            <button class="btn" onclick="appendToDisplay('9')">9</button>
-            <button class="btn operator" onclick="appendToDisplay('*')">*</button>
-            <button class="btn" onclick="appendToDisplay('4')">4</button>
-            <button class="btn" onclick="appendToDisplay('5')">5</button>
-            <button class="btn" onclick="appendToDisplay('6')">6</button>
-            <button class="btn operator" onclick="appendToDisplay('-')">-</button>
-            <button class="btn" onclick="appendToDisplay('1')">1</button>
-            <button class="btn" onclick="appendToDisplay('2')">2</button>
-            <button class="btn" onclick="appendToDisplay('3')">3</button>
-            <button class="btn operator" onclick="appendToDisplay('+')">+</button>
-            <button class="btn zero" onclick="appendToDisplay('0')">0</button>
-            <button class="btn" onclick="appendToDisplay('.')">.</button>
-            <button class="btn equal" onclick="calculateResult()">=</button>
+        <div id="screen" class="screen">0</div>
+        <div class="button-row">
+            <button class="button memory" onclick="memoryStore()">M+</button>
+            <button class="button memory" onclick="memoryRecall()">MR</button>
+            <button class="button memory" onclick="memoryClear()">MC</button>
+            <button class="button" onclick="clearScreen()">C</button>
+        </div>
+        <div class="button-row">
+            <button class="button" onclick="appendNumber('7')">7</button>
+            <button class="button" onclick="appendNumber('8')">8</button>
+            <button class="button" onclick="appendNumber('9')">9</button>
+            <button class="button" onclick="setOperation('/')">/</button>
+        </div>
+        <div class="button-row">
+            <button class="button" onclick="appendNumber('4')">4</button>
+            <button class="button" onclick="appendNumber('5')">5</button>
+            <button class="button" onclick="appendNumber('6')">6</button>
+            <button class="button" onclick="setOperation('*')">*</button>
+        </div>
+        <div class="button-row">
+            <button class="button" onclick="appendNumber('1')">1</button>
+            <button class="button" onclick="appendNumber('2')">2</button>
+            <button class="button" onclick="appendNumber('3')">3</button>
+            <button class="button" onclick="setOperation('-')">-</button>
+        </div>
+        <div class="button-row">
+            <button class="button" onclick="appendNumber('0')">0</button>
+            <button class="button" onclick="appendNumber('.')">.</button>
+            <button class="button" onclick="calculate()">=</button>
+            <button class="button" onclick="setOperation('+')">+</button>
+        </div>
+        <div class="button-row">
+            <button class="button double" onclick="calculateSquareRoot()">√</button>
+            <button class="button double" onclick="calculatePower()">x²</button>
         </div>
     </div>
+
     <script>
-        const display = document.getElementById('display');
+        let currentInput = '';
+        let previousInput = '';
+        let operation = null;
+        let memory = 0;
 
-        function clearDisplay() {
-            display.textContent = '0';
+        function appendNumber(number) {
+            if (currentInput.includes('.') && number === '.') return;
+            currentInput += number;
+            updateScreen();
         }
 
-        function appendToDisplay(value) {
-            if (display.textContent === '0') {
-                display.textContent = value;
-            } else {
-                display.textContent += value;
+        function updateScreen() {
+            const screen = document.getElementById('screen');
+            screen.textContent = currentInput || '0';
+        }
+
+        function clearScreen() {
+            currentInput = '';
+            previousInput = '';
+            operation = null;
+            updateScreen();
+        }
+
+        function setOperation(op) {
+            if (currentInput === '') return;
+            if (previousInput !== '') {
+                calculate();
             }
+            operation = op;
+            previousInput = currentInput;
+            currentInput = '';
         }
 
-        function deleteLast() {
-            display.textContent = display.textContent.slice(0, -1) || '0';
-        }
-
-        function calculateResult() {
-            try {
-                display.textContent = eval(display.textContent);
-            } catch {
-                display.textContent = 'Error';
+        function calculate() {
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            if (isNaN(prev) || isNaN(current)) return;
+            switch (operation) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = prev / current;
+                    break;
+                default:
+                    return;
             }
+            currentInput = result;
+            operation = null;
+            previousInput = '';
+            updateScreen();
+        }
+
+        function calculateSquareRoot() {
+            if (currentInput === '') return;
+            currentInput = Math.sqrt(parseFloat(currentInput));
+            updateScreen();
+        }
+
+        function calculatePower() {
+            if (currentInput === '') return;
+            currentInput = Math.pow(parseFloat(currentInput), 2);
+            updateScreen();
+        }
+
+        function memoryStore() {
+            memory = parseFloat(currentInput) || 0;
+        }
+
+        function memoryRecall() {
+            currentInput = memory.toString();
+            updateScreen();
+        }
+
+        function memoryClear() {
+            memory = 0;
         }
     </script>
 </body>
+
 </html>
